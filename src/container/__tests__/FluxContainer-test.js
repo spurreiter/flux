@@ -34,7 +34,7 @@ function createContainer(containerClass, options, props, context) {
     // Create a new component that provides the child context.
     var ComponentWithContext = React.createClass({
       childContextTypes: {
-        value: React.PropTypes.string,
+        value: React.PropTypes.any,
       },
       getChildContext: function() {
         return context;
@@ -242,12 +242,16 @@ describe('FluxContainer', () => {
     // Setup the container.
     class SimpleContainer extends BaseContainer {
       static contextTypes = {
-        value: React.PropTypes.string,
+        value: React.PropTypes.any,
       };
+
+      static getStores(props, context) {
+        return [context.value.FooStore];
+      }
 
       static calculateState(prevState, props, context) {
         return {
-          value: context.value + '-' + FooStore.getState(),
+          value: 'context-' + context.value.FooStore.getState(),
         };
       }
     }
@@ -257,7 +261,7 @@ describe('FluxContainer', () => {
       {withProps: true, withContext: true}, // options
       {}, // props
       {
-        value: 'context',
+        value: {FooStore},
       }, // context
     );
 
